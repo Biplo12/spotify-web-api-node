@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Biplo12/spotify-web-api-node">
-    <img src="images/spotify-api.png" alt="Logo" width="80" height="80">
+    <img src="./Client/public/spotify-api.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">spotify-web-api-node</h3>
