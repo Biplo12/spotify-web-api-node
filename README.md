@@ -10,7 +10,8 @@
   <p align="center">
     API for Music app using spotify-web-api-node library
     <br />
-    <a href="https://github.com/thelinmichael/spotify-web-api-node"> and <a href="https://github.com/WebDevSimplified/spotify-clone"><strong>spotify-web-api-node github »</strong></a>
+    <a href="https://github.com/thelinmichael/spotify-web-api-node"><strong>spotify-web-api-node github »</strong></a>
+        <a href="https://github.com/WebDevSimplified/spotify-clone"><strong>WebDevSimplified github »</strong></a>
     <br />
   </p>
 </div>
