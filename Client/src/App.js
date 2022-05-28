@@ -3,8 +3,8 @@ import Dashboard from "./Pages/Dashboard";
 
 const code = new URLSearchParams(window.location.search).get("code");
 
-const App = () => {
+function App() {
   return code ? <Dashboard code={code} /> : <Login />;
-};
+}
 
 export default App;

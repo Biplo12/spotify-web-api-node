@@ -1,11 +1,11 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 const useAuth = (code) => {
-  const [accessToken, setAccessToken] = React.useState(null);
-  const [refreshToken, setRefreshToken] = React.useState(null);
-  const [expiresIn, setExpiresIn] = React.useState(null);
+  const [accessToken, setAccessToken] = useState();
+  const [refreshToken, setRefreshToken] = useState();
+  const [expiresIn, setExpiresIn] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     axios
       .post("http://localhost:3001/login", {
         code,
@@ -14,13 +14,34 @@ const useAuth = (code) => {
         setAccessToken(res.data.accessToken);
         setRefreshToken(res.data.refreshToken);
         setExpiresIn(res.data.expiresIn);
-        res.status(200).json(res.data);
+        window.history.pushState({}, null, "/");
       })
-      .catch((res, err) => {
-        res.status(500).json("Authentication expired", err);
+      .catch((err, res) => {
+        res.sendStatus(400).json("Error occurred with access token", err);
         window.location = "/";
       });
   }, [code]);
+
+  useEffect(() => {
+    if (!refreshToken || !expiresIn) return;
+    const interval = setInterval(() => {
+      axios
+        .post("http://localhost:3001/refresh", {
+          refreshToken,
+        })
+        .then((res) => {
+          setAccessToken(res.data.accessToken);
+          setExpiresIn(res.data.expiresIn);
+        })
+        .catch((err, res) => {
+          res.sendStatus(400).json("Error occurred with refresh token", err);
+          window.location = "/";
+        });
+    }, (expiresIn - 60) * 1000);
+
+    return () => clearInterval(interval);
+  }, [refreshToken, expiresIn]);
+  return accessToken;
 };
 
 export default useAuth;

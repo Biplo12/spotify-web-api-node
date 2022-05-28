@@ -1,13 +1,18 @@
 import React from "react";
-const AUTH_URL =
-  "https://accounts.spotify.com/authorize?client_id=d69815a90097466f8ce5c0ea526b7874&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state";
 
-const Login = () => {
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+const client_id = process.env.REACT_APP_CLIENT_ID;
+const redirected_uri = process.env.REACT_APP_REDIRECTED_URI;
+
+const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirected_uri}&scope=streaming%20user-read-email%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state`;
+
+export default function Login() {
   return (
-    <div className="login-containe">
-      <a href={AUTH_URL}>Login</a>
+    <div>
+      <a href={AUTH_URL}>Login With Spotify</a>
     </div>
   );
-};
-
-export default Login;
+}

@@ -1,35 +1,63 @@
 const express = require("express");
-const spotifyWebAPI = require("spotify-web-api-node");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const dotenv = require("dotenv").config();
+const SpotifyWebApi = require("spotify-web-api-node");
+const dotenv = require("dotenv");
 
 const app = express();
 
+dotenv.config();
 app.use(cors());
-
+app.use(express.json());
 app.use(bodyParser.json());
 
-app
-  .post("/login", (req, res) => {
-    const code = req.body.code;
-    const spotifyAPI = new spotifyWebAPI({
-      redirectUri: process.env.REDIRECTED_URI,
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-    });
-    spotifyAPI.authorizationCodeGrant(code).then((data) => {
+app.post("/refresh", (req, res) => {
+  const refreshToken = req.body.refreshToken;
+  console.log("Token refresh");
+  const spotifyApi = new SpotifyWebApi({
+    redirectUri: process.env.REDIRECTED_URI,
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    refreshToken,
+  });
+  spotifyApi
+    .refreshAccessToken()
+    .then((data) => {
+      console.log("The access token has been refreshed!");
       res.json({
-        access_token: data.body.access_token,
-        refresh_token: data.body.refresh_token,
+        accessToken: data.body.access_token,
         expiresIn: data.body.expires_in,
       });
+      spotifyApi.setAccessToken(data.body["access_token"]);
+    })
+    .catch((err, res) => {
+      res.sendStatus(400).json("Error occurred with refresh token", err);
     });
-  })
-  .patch((err) => {
-    res.status(300).json(err);
+});
+
+app.post("/login", (req, res) => {
+  const code = req.body.code;
+  console.log("User successfully logged in");
+  const spotifyApi = new SpotifyWebApi({
+    redirectUri: process.env.REDIRECTED_URI,
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
   });
 
+  spotifyApi
+    .authorizationCodeGrant(code)
+    .then((data) => {
+      res.json({
+        accessToken: data.body.access_token,
+        refreshToken: data.body.refresh_token,
+        expiresIn: data.body.expires_in,
+      });
+    })
+    .catch((err, res) => {
+      res.sendStatus(400).json("Error occurred with access token", err);
+    });
+});
+
 app.listen(process.env.PORT || 3001, () => {
-  console.log("Server started on port 3000");
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
